@@ -2,28 +2,35 @@ import express from 'express'
 import mongoose from 'mongoose'
 import Vote from 'src/server/models'
 import tvmaze from 'tv-maze'
+import http from 'http'
+import socketio from 'socket.io'
+import { addVotes, incrementVote, getVotes } from 'src/server/lib'
+
 
 const app = express()
 const client = tvmaze.createClient()
 const votes = {} // object, dictionary, hashtable
-
-
+const server = http.createServer(app)
+const io = socketio (server)
 
 mongoose.connect('mongodb://localhost/tvify')
+app.use(express.static('public'))
 
-function addVotes (shows, callback) {
-  Vote.find({}, (err, votes) => {
-    if (err) votes = []
+io.on('connection', socket =>{
+  console.log("Connected " + socket.id)
 
-    shows = shows.map(show => {
-      let vote = votes.filter(vote => vote.showId === show.id)[0]
-      show.count = vote ? vote.count : 0
-      return show
-    })
-
-    callback(shows)
+  socket.on('ping',_=>{
+    console.log('PONG')
   })
-}
+
+  socket.on('vote',id => {
+    incrementVote(id, (err,vote) => {
+      if (err) return socket.emit('vote:error',err)
+      socket.emit('vote:done',vote)
+    })
+  })
+
+})
 
 // GET /shows
 app.get('/shows', (req, res) => {
@@ -55,14 +62,10 @@ app.get('/search', (req, res) => {
   })
 })
 
-
-
-app.use(express.static('public'))
-
 // GET  /votes
 app.get('/votes', (req, res) => {
   /*res.json(votes)*/
-  Vote.find({}, (err, docs) => {
+    getVotes((err, docs) => {
     if (err) {
       return res.sendStatus(500).json(err)
     }
@@ -74,22 +77,13 @@ app.get('/votes', (req, res) => {
 // POST /vote/123
 app.post('/vote/:id', (req, res) => {
   let id = req.params.id
-  Vote.findOne({ showId: id }, (err, doc) => {
-    if (doc) {
-      doc.count = doc.count + 1;
-      doc.save(function (err)  {
-        if (err) return res.sendStatus(500).json(err)
-         res.json(doc)
-        })
-    }else {
-      let vote = new Vote()
-      vote.showId = id
-      vote.count = 1
-      vote.save(function (err)  {
-       if (err) return res.sendStatus(500).json(err)
-         res.json(vote)})
+  incrementVote(id,(err,votes)=>{
+    if(err){
+      return res.sendStatus(500).json(err)
     }
-   }) 
+    res.json(votes)
+  })
+   
 })
 
-app.listen(3000, () => console.log('Servidor iniciado con Express en el puerto 3000'))
+server.listen(3000, () => console.log('Servidor iniciado con Express en el puerto 3000'))

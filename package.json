@@ -9,6 +9,8 @@
     "jquery": "^2.1.4",
     "page": "^1.6.4",
     "qs": "^6.0.0",
+    "socket.io": "^1.7.1",
+    "socket.io-client": "^1.7.1",
     "tv-maze": "^1.1.0"
   },
   "devDependencies": {
