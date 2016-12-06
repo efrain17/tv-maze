@@ -1,10 +1,14 @@
 import express from 'express'
-const app = express()
-
-const votes = {} // object, dictionary, hashtable
-
 import mongoose from 'mongoose'
 import Vote from 'src/server/models'
+import tvmaze from 'tv-maze'
+
+const app = express()
+const client = tvmaze.createClient()
+const votes = {} // object, dictionary, hashtable
+
+
+
 mongoose.connect('mongodb://localhost/tvify')
 
 function addVotes (shows, callback) {
@@ -21,7 +25,7 @@ function addVotes (shows, callback) {
   })
 }
 
-// GET /api/shows
+// GET /shows
 app.get('/shows', (req, res) => {
   client.shows((err, shows) => {
     if (err) {
@@ -34,7 +38,7 @@ app.get('/shows', (req, res) => {
   })
 })
 
-// GET /api/search
+// GET /search
 app.get('/search', (req, res) => {
   let query = req.query.q
 
