@@ -90,6 +90,53 @@ body {
   font-size: 40px;
 }
 
+.tv-show button.chat {
+  background: transparent;
+  font-size: 22px;
+  border: 0;
+  outline: 0;
+  cursor: pointer;
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+}
+
+.tv-show .img-container {
+  width: 20%;
+}
+
+.chat-container
+.img-container {
+  width: 20%;
+}
+
+.chat-container img {
+   max-width: 100%;
+}
+
+.chat-container .chat-window {
+  width: 75%;
+}
+
+.chat-container .chat-body {
+   height: 200px;
+   border: 1px solid #efefef;
+   padding: 10px;
+   margin-bottom: 5px;
+   overflow: auto;
+}
+
+.chat-container .chat-nick {
+  width: 25%;
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+.chat-container .chat-input {
+   width: 65%;
+   font-size: 16px;
+}
+
 .tv-show .img-container {
   width: 20%;
 }

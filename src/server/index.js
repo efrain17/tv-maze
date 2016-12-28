@@ -26,10 +26,31 @@ io.on('connection', socket =>{
   socket.on('vote',id => {
     incrementVote(id, (err,vote) => {
       if (err) return socket.emit('vote:error',err)
-      socket.emit('vote:done',vote)
+      io.sockets.emit('vote:done',vote)
     })
   })
 
+  socket.on('join',room=>{
+    socket.room=room
+    socket.join(room)
+  })
+
+  socket.on('message',msg=>{
+    socket.broadcast.to(socket.room).emit('message', msg)
+  })
+
+})
+
+app.get('/show/:id', (req, res) => {
+  let id = req.params.id
+
+  client.show(id, (err, show) => {
+    if (err) {
+      return res.sendStatus(500).json(err)
+    }
+
+    res.json(show)
+  })
 })
 
 // GET /shows

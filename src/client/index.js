@@ -5,7 +5,7 @@
 import $ from 'jquery'
 import page from 'page'
 import { getShows, searchShows } from 'src/client/tvmaze-api-client'
-import renderShows from 'src/client/render'
+import { renderShows, renderChat } from 'src/client/render'
 import $tvShowsContainer from 'src/client/tv-shows-container'
 import 'src/client/search-form'
 import qs from 'qs'
@@ -29,6 +29,11 @@ page('/search', function (ctx, next) {
     $loader.remove();
     renderShows(res);
   })
+})
+
+page('/chat/:showId', function (ctx, next) {
+  $tvShowsContainer.find('.tv-show').remove()
+  renderChat(ctx.params.showId)
 })
 
 var productionEnv = !!~window.location.host.indexOf('github.io')
